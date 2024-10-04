@@ -1,0 +1,246 @@
+#include <stdio.h> 
+#include <stdlib.h>
+#include <string.h>
+
+#define Max 100
+
+typedef struct {
+    int annee;
+    int mois;
+    int jour;
+} date_res;
+
+typedef struct {
+    char Nom[20];
+    char Prenom[20];
+    char Telephone[20];
+    int age;
+    char statut[25];
+    int id;
+    date_res resDATE;
+} reservation;
+
+reservation res[Max] = {
+    {"Belaili", "Ahmed", "0650123456", 30, "valide", 1, {2024, 10, 5}},
+    {"benaim", "Sara", "0676543210", 28, "traite", 2, {2024, 10, 10}},
+    {"Khouili", "khalid", "0681234567", 35, "Annule", 3, {2024, 10, 15}},
+    {"nouassi", "Omar", "0699876543", 22, "valide", 4, {2024, 10, 20}},
+    {"malki", "rachid", "0612345678", 40, "valide", 5, {2024, 11, 1}},
+    {"ahmadi", "Rachid", "0658765432", 23, "traite", 6, {2024, 11, 5}},
+    {"Benaim", "Salma", "0675432109", 27, "valide", 7, {2024, 11, 15}},
+    {"el hiloufi", "Mouad", "068456321", 29, "Annule", 8, {2024, 11, 20}},
+    {"kadioui", "youssef", "0698765432", 24, "valide", 9, {2024, 11, 25}},
+    {"boughanem", "Reda", "0610987654", 36, "traite", 10, {2024, 12, 1}}
+};
+
+int id = 10;
+int number = 10;
+
+void Ajouter() {
+    if (number < Max) {
+        printf("Entrer le nom de famille: ");
+        scanf("%s", res[number].Nom);
+        printf("Entrer le prenom: ");
+        scanf("%s", res[number].Prenom);
+        printf("Entrer le numero de telephone commencant par '06' ou '07': ");
+        scanf("%s", res[number].Telephone);
+        printf("Entrer l'age: ");
+        scanf("%d", &res[number].age);
+        printf("Entrer le statut: ");
+        scanf("%s", res[number].statut);
+        printf("Entrer le jour de la reservation (dd): ");
+        scanf("%d", &res[number].resDATE.jour);
+        printf("Entrer le mois de la reservation (mm): ");
+        scanf("%d", &res[number].resDATE.mois);
+        printf("Entrer l'annee de la reservation (yyyy): ");
+        scanf("%d", &res[number].resDATE.annee);
+        res[number].id = ++id;
+        number++;
+        printf("Reservation ajoutee avec succes.\n");
+    } else {
+        printf("Nombre maximum de reservations atteint.\n");
+    }
+}
+
+void Modifier() {
+    int S_id;
+    printf("Entrer l'ID de la reservation a modifier: ");
+    scanf("%d", &S_id);
+
+    for (int i = 0; i < number; i++) {
+        if (res[i].id == S_id) {
+            printf("Entrer le nouveau nom de famille: ");
+            scanf("%s", res[i].Nom);
+            printf("Entrer le nouveau prenom: ");
+            scanf("%s", res[i].Prenom);
+            printf("Entrer le nouveau numero de telephone: ");
+            scanf("%s", res[i].Telephone);
+            printf("Entrer le nouvel age: ");
+            scanf("%d", &res[i].age);
+            printf("Entrer le nouveau statut: ");
+            scanf("%s", res[i].statut);
+            printf("Entrer la nouvelle date de reservation (jour mois annee): ");
+            scanf("%d %d %d", &res[i].resDATE.jour, &res[i].resDATE.mois, &res[i].resDATE.annee);
+            printf("Reservation modifiee avec succes.\n");
+            return;
+        }
+    }
+    printf("Reservation non trouvee.\n");
+}
+
+void Affichage_res() {
+    if (number == 0) {
+        printf("Aucune reservation à afficher.\n");
+        return;
+    }
+
+    printf("Liste des reservations:\n");
+    for (int i = 0; i < number; i++) {
+        printf("ID: %d, Nom: %s, Prenom: %s, Telephone: %s, age: %d, Statut: %s, Date: %d/%d/%d\n",
+               res[i].id, res[i].Nom, res[i].Prenom, res[i].Telephone, res[i].age, res[i].statut,
+               res[i].resDATE.jour, res[i].resDATE.mois, res[i].resDATE.annee);
+    }
+}
+
+void Suppression() {
+    int S_id;
+    printf("Entrer l id de la reservation a supprimer: ");
+    scanf("%d", &S_id);
+
+    for (int i = 0; i < number; i++) {
+        if (res[i].id == S_id) {
+            for (int j = i; j < number - 1; j++) {
+                res[j] = res[j + 1];
+            }
+            number--;
+            printf("Reservation supprimee avec succes.\n");
+            return;
+        }
+    }
+    printf("Reservation non trouvee.\n");
+}
+
+void tri_par_nom() {
+    reservation temp;
+
+    for (int i = 0; i < number - 1; i++) {
+        for (int j = 0; j < number - i - 1; j++) {
+            if (strcmp(res[j].Nom, res[j + 1].Nom) > 0) {
+                temp = res[j];
+                res[j] = res[j + 1];
+                res[j + 1] = temp;
+            }
+        }
+    }
+    Affichage_res();
+}
+
+void tri_par_statut() {
+    for (int i = 0; i < number - 1; i++) {
+        for (int j = 0; j < number - i - 1; j++) {
+            if (strcmp(res[j].statut, res[j + 1].statut) > 0) {
+                reservation temp = res[j];
+                res[j] = res[j + 1];
+                res[j + 1] = temp;
+            }
+        }
+    }
+    printf("Reservations triees par statut.\n");
+    Affichage_res();
+}
+
+void Statistiques() {
+    int total_age = 0, age_0_18 = 0, age_19_35 = 0, age_36_plus = 0;
+    int VAL = 0, ANN = 0, TRAIT = 0;
+
+    for (int i = 0; i < number; i++) {
+        total_age += res[i].age;
+
+        if (res[i].age <= 18) {
+            age_0_18++;
+        } else if (res[i].age <= 35) {
+            age_19_35++;
+        } else {
+            age_36_plus++;
+        }
+
+        if (strcmp(res[i].statut, "valide") == 0) {
+            VAL++;
+        } else if (strcmp(res[i].statut, "Annule") == 0) {
+            ANN++;
+        } else if (strcmp(res[i].statut, "traite") == 0) {
+            TRAIT++;
+        }
+    }
+
+    float moyenne_age = (float)total_age / number;
+
+    printf("\nStatistiques:\n");
+    printf("age moyen des patients: %.2f ans\n", moyenne_age);
+    printf("Patients par tranche d'age:\n");
+    printf("0-18 ans: %d\n", age_0_18);
+    printf("19-35 ans: %d\n", age_19_35);
+    printf("36+ ans: %d\n", age_36_plus);
+    printf("Reservations par statut:\n");
+    printf("Valide: %d\n", VAL);
+    printf("Annule: %d\n", ANN);
+    printf("Traite: %d\n", TRAIT);
+}
+
+void recherche_nom() {
+    char nom_recherche[25];
+    printf("Entrer le nom de famille: ");
+    scanf("%s", nom_recherche);
+
+  
+    for (int i = 0; i < number; i++) {
+        if (strcmp(res[i].Nom, nom_recherche) == 0) {
+          
+            printf("Nom: %s\n", res[i].Nom);
+            printf("Prenom: %s\n", res[i].Prenom);
+            printf("Telephone: %s\n", res[i].Telephone);
+            printf("age: %d\n", res[i].age);
+            printf("Date de reservation: %d/%d/%d\n", res[i].resDATE.jour, res[i].resDATE.mois, res[i].resDATE.annee);
+            printf("Statut: %s\n", res[i].statut);
+            printf("ID de reservation: %d\n", res[i].id);
+        }
+    }
+   
+}
+
+int main() {
+    int choix;
+
+    do {
+        printf("\n============================\n");
+        printf("  Menu des Reservations:\n");
+        printf("============================\n");
+        printf("1. Ajouter une reservation\n");
+        printf("2. Modifier une reservation\n");
+        printf("3. Afficher les reservations\n");
+        printf("4. Supprimer une reservation\n");
+        printf("5. Trier les reservations par nom\n");
+        printf("6. Trier les reservations par statut\n");
+        printf("7. Rechercher une reservation par nom\n");
+        printf("8. Afficher les statistiques\n");
+        printf("9. Quitter\n");
+        printf("============================\n");
+        printf("Votre choix: ");
+        scanf("%d", &choix);
+
+        switch (choix) {
+            case 1: Ajouter(); break;
+            case 2: Modifier(); break;
+            case 3: Affichage_res(); break;
+            case 4: Suppression(); break;
+            case 5: tri_par_nom(); break;
+            case 6: tri_par_statut(); break;
+            case 7: recherche_nom(); break;
+            case 8: Statistiques(); break;
+            case 9: printf("Sortie du programme...\n"); break;
+            default: printf("Choix invalide. Essayez encore.\n");
+        }
+    } while (choix != 9);
+
+    return 0;
+}
